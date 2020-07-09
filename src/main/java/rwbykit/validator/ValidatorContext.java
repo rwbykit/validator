@@ -1,7 +1,6 @@
 package rwbykit.validator;
 
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorManager;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.springframework.util.StringUtils;
 import rwbykit.validator.annotation.Regulated;
 import rwbykit.validator.annotation.Rely;
@@ -9,7 +8,7 @@ import rwbykit.validator.groups.ValidationOrder;
 import rwbykit.validator.metadata.BeanDescriptor;
 import rwbykit.validator.metadata.BeanMetaData;
 import rwbykit.validator.metadata.PropertyDescriptor;
-import rwbykit.validator.metadata.impl.ConstraintDescriptorImpl;
+import rwbykit.validator.metadata.descriptor.ConstraintDescriptorImpl;
 import rwbykit.validator.util.Collections;
 import rwbykit.validator.util.Expressions;
 
@@ -133,7 +132,7 @@ public class ValidatorContext<T> {
         // Calculation of effective constraint attributes
         Map<Class<? extends Annotation>, Set<Class<?>>> annotationMap = new HashMap<>(8);
         propertyDescriptor.getRegulatedConstraints().stream()
-                .filter(descriptor -> effective(descriptor.getGroups()) && this.computeEffectiveRegulated(currentObject, descriptor))
+                .filter(descriptor -> effective(descriptor.getGroups()) && this.expression(currentObject, descriptor))
                 .flatMap(descriptor -> Arrays.stream(descriptor.getAnnotation().availables()))
                 .forEach(available -> {
                     annotationMap.merge(available.annotation(), Collections.newHashSet(available.usefulGroup()), (oldSet, newSet) -> {
@@ -145,7 +144,7 @@ public class ValidatorContext<T> {
         if (!annotationMap.isEmpty() && !propertyDescriptor.getConstraints().isEmpty()) {
             return propertyDescriptor.getConstraints().stream()
                     .filter(c -> annotationMap.containsKey(c.getAnnotation().annotationType())
-                            && Collections.containsAny(annotationMap.get(c.getAnnotation().annotationType()), (Class<?>[]) c.getAttributes().get(ConstraintHelper.GROUPS)))
+                            && Collections.containsAny(annotationMap.get(c.getAnnotation().annotationType()), c.getGroups()))
                     .map(constraint -> (ConstraintDescriptor<A>) constraint)
                     .collect(Collectors.toSet());
         }
@@ -195,7 +194,7 @@ public class ValidatorContext<T> {
         }
     }
 
-    private boolean computeEffectiveRegulated(Object currentObject, ConstraintDescriptor<Regulated> constraintDescriptor) {
+    private boolean expression(Object currentObject, ConstraintDescriptor<Regulated> constraintDescriptor) {
         Regulated regulated = constraintDescriptor.getAnnotation();
         String expression = regulated.expression();
         return Expressions.conditionalCalculation(currentObject, expression);

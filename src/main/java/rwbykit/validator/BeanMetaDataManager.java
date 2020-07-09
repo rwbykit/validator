@@ -5,7 +5,7 @@ import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
 import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import rwbykit.validator.metadata.BeanMetaData;
-import rwbykit.validator.metadata.impl.BeanMetaDataImpl;
+import rwbykit.validator.metadata.descriptor.BeanMetaDataImpl;
 
 import java.util.Map;
 import java.util.Objects;
@@ -42,9 +42,9 @@ public class BeanMetaDataManager {
 
         Objects.requireNonNull(beanClass, "Class type must not null!");
 
-        BeanMetaData<T> beanMetaData = (BeanMetaData<T>) beanMetaDataCache.get( beanClass );
+        BeanMetaData<T> beanMetaData = (BeanMetaData<T>) beanMetaDataCache.get(beanClass);
 
-        if ( beanMetaData != null ) {
+        if (beanMetaData != null) {
             return beanMetaData;
         }
         beanMetaData = (BeanMetaData<T>) createBeanMetaData(beanClass);
@@ -55,7 +55,7 @@ public class BeanMetaDataManager {
 
         return beanMetaData;
     }
-    
+
     protected <T> BeanMetaData<T> createBeanMetaData(Class<T> clazz) {
         return BeanMetaDataImpl.of(clazz, constraintHelper, javaBeanHelper);
     }

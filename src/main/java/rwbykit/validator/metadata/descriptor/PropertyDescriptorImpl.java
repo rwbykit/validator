@@ -1,4 +1,4 @@
-package rwbykit.validator.metadata.impl;
+package rwbykit.validator.metadata.descriptor;
 
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation;

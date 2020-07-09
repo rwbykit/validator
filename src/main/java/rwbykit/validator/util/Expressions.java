@@ -26,7 +26,7 @@ public class Expressions {
      * @param expression
      * @return
      */
-    private static Expression expression(final String expression) {
+    public static Expression expression(final String expression) {
         return expressions.computeIfAbsent(expression, (exp) -> parser.parseExpression(expression));
     }
 

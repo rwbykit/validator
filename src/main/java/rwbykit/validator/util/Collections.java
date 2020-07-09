@@ -162,6 +162,10 @@ public class Collections {
         return containsAny(collection.toArray(), ts);
     }
 
+    public static <T> boolean containsAny(Collection<T> c1, Collection<T> c2) {
+        return c2.parallelStream().anyMatch(c -> c1.contains(c));
+    }
+
     public static <T> Set<T> newHashSet(T t) {
         return new HashSet<>(java.util.Collections.singleton(t));
     }

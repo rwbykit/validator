@@ -1,11 +1,10 @@
-package rwbykit.validator.metadata.impl;
+package rwbykit.validator.metadata.descriptor;
 
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 
 import java.lang.annotation.Annotation;
-
 
 public class ConstraintDescriptorImpl<T extends Annotation> extends org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl {
 

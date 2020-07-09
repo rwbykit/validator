@@ -1,9 +1,7 @@
-package rwbykit.validator.metadata.impl;
+package rwbykit.validator.metadata.descriptor;
 
-import org.hibernate.validator.internal.engine.DefaultPropertyNodeNameProvider;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation;
-import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
 import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.hibernate.validator.internal.util.CollectionHelper;
 import org.springframework.util.ObjectUtils;
@@ -14,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class BeanDescriptorImpl<T> implements BeanDescriptor<T> {

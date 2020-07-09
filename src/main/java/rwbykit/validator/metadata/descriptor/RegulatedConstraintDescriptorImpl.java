@@ -1,9 +1,10 @@
-package rwbykit.validator.metadata.impl;
+package rwbykit.validator.metadata.descriptor;
 
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ObjectUtils;
 import rwbykit.validator.annotation.Regulated;
+import rwbykit.validator.util.Expressions;
 
 import javax.validation.ConstraintTarget;
 import javax.validation.ConstraintValidator;
@@ -21,10 +22,13 @@ public class RegulatedConstraintDescriptorImpl implements ConstraintDescriptor<R
 
     private final Regulated annotation;
     private final Map<String, Object> attributes;
+    private final Set<Class<?>> groups;
 
     public RegulatedConstraintDescriptorImpl(Regulated annotation) {
         this.annotation = annotation;
-        this.attributes = this.attributes();
+        this.attributes = attributes();
+        this.groups = groups();
+        afterExpressionSet();
     }
 
     private Map<String, Object> attributes() {
@@ -41,12 +45,16 @@ public class RegulatedConstraintDescriptorImpl implements ConstraintDescriptor<R
         return ObjectUtils.nullSafeToString(this.attributes.get(ConstraintHelper.MESSAGE));
     }
 
-    @Override
-    public Set<Class<?>> getGroups() {
+    private Set<Class<?>> groups() {
         Class<?>[] classes = (Class<?>[]) this.attributes.get(ConstraintHelper.GROUPS);
         return !ObjectUtils.isEmpty(classes) ?
                 Collections.unmodifiableSet(Arrays.stream(classes).collect(Collectors.toSet())) :
                 Collections.emptySet();
+    }
+
+    @Override
+    public Set<Class<?>> getGroups() {
+        return this.groups;
     }
 
     @Override
@@ -87,6 +95,10 @@ public class RegulatedConstraintDescriptorImpl implements ConstraintDescriptor<R
     @Override
     public <U> U unwrap(Class<U> type) {
         throw new UnsupportedOperationException();
+    }
+
+    public void afterExpressionSet() {
+        Expressions.expression(this.annotation.expression());
     }
 
 }
