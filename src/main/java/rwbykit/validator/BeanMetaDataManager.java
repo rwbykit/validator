@@ -1,6 +1,9 @@
 package rwbykit.validator;
 
+import org.hibernate.validator.internal.engine.DefaultPropertyNodeNameProvider;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
+import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
+import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import rwbykit.validator.metadata.BeanMetaData;
 import rwbykit.validator.metadata.impl.BeanMetaDataImpl;
 
@@ -19,8 +22,11 @@ public class BeanMetaDataManager {
 
     private final ConstraintHelper constraintHelper;
 
+    private final JavaBeanHelper javaBeanHelper;
+
     public BeanMetaDataManager(ConstraintHelper constraintHelper) {
         this.constraintHelper = constraintHelper;
+        this.javaBeanHelper = new JavaBeanHelper(new DefaultGetterPropertySelectionStrategy(), new DefaultPropertyNodeNameProvider());
     }
 
     /**
@@ -51,7 +57,7 @@ public class BeanMetaDataManager {
     }
     
     protected <T> BeanMetaData<T> createBeanMetaData(Class<T> clazz) {
-        return new BeanMetaDataImpl<>(clazz, constraintHelper);
+        return BeanMetaDataImpl.of(clazz, constraintHelper, javaBeanHelper);
     }
 
     public void clear() {

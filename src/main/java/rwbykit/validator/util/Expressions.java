@@ -1,7 +1,5 @@
 package rwbykit.validator.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -15,8 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author tangxb
  */
 public class Expressions {
-
-    private static final Logger logger = LoggerFactory.getLogger(Expressions.class);
 
     private final static ExpressionParser parser = new SpelExpressionParser();
 
@@ -41,12 +37,7 @@ public class Expressions {
      * @return
      */
     public static boolean conditionalCalculation(Object object, String expression) {
-        /*if (logger.isDebugEnabled()) {
-            logger.debug("Current execute expression is [{}]", expression);
-        }*/
-        StandardEvaluationContext context = new StandardEvaluationContext();
-        context.setRootObject(object);
-        return expression(expression).getValue(context, Boolean.class);
+        return expression(expression).getValue(new StandardEvaluationContext(object), Boolean.class);
     }
 
 }

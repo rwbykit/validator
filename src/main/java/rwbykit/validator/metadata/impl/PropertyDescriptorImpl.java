@@ -1,13 +1,9 @@
 package rwbykit.validator.metadata.impl;
 
-import org.hibernate.validator.internal.engine.DefaultPropertyNodeNameProvider;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation;
-import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
 import org.hibernate.validator.internal.properties.javabean.JavaBeanField;
-import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.hibernate.validator.internal.util.CollectionHelper;
-import org.hibernate.validator.internal.util.ReflectionHelper;
 import org.springframework.util.CollectionUtils;
 import rwbykit.validator.annotation.Regulated;
 import rwbykit.validator.metadata.PropertyDescriptor;
@@ -15,14 +11,10 @@ import rwbykit.validator.metadata.PropertyDescriptor;
 import javax.validation.Constraint;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,14 +25,16 @@ public class PropertyDescriptorImpl implements PropertyDescriptor {
 
     private final Type type;
     private final String name;
+    private final ConstraintLocation constraintLocation;
     private final Set<ConstraintDescriptor<?>> constraintDescriptors;
     private final Set<ConstraintDescriptor<Regulated>> regulatedConstraintDescriptors;
 
     PropertyDescriptorImpl(ConstraintLocation constraintLocation, ConstraintHelper constraintHelper) {
         this.type = constraintLocation.getConstrainable().getTypeForValidatorResolution();
         this.name = constraintLocation.getConstrainable().getName();
-        List<Annotation> annotations = getActualAnnotations(constraintLocation, constraintHelper);
-        this.constraintDescriptors = makeConstrainDescriptor(constraintLocation, annotations, constraintHelper);
+        this.constraintLocation = constraintLocation;
+        List<Annotation> annotations = getActualAnnotations(constraintHelper);
+        this.constraintDescriptors = makeConstrainDescriptor(annotations, constraintHelper);
         this.regulatedConstraintDescriptors = makeRegulatedConstrainDescriptor(annotations);
     }
 
@@ -73,8 +67,7 @@ public class PropertyDescriptorImpl implements PropertyDescriptor {
         return !CollectionUtils.isEmpty(constraintDescriptors);
     }
 
-    private Set<ConstraintDescriptor<? extends Annotation>> makeConstrainDescriptor(ConstraintLocation constraintLocation,
-                                                                                    List<Annotation> annotations,
+    private Set<ConstraintDescriptor<? extends Annotation>> makeConstrainDescriptor(List<Annotation> annotations,
                                                                                     ConstraintHelper constraintHelper) {
         return CollectionUtils.isEmpty(annotations) ? Collections.emptySet() :
                 annotations.stream()
@@ -94,14 +87,14 @@ public class PropertyDescriptorImpl implements PropertyDescriptor {
     }
 
     private boolean isConstraintAnnotation(Annotation annotation) {
-        return Objects.nonNull(annotation) && annotation.annotationType().isAnnotationPresent(Constraint.class);
+        return annotation.annotationType().isAnnotationPresent(Constraint.class);
     }
 
     private boolean isRegulatedConstraintAnnotation(Annotation annotation) {
-        return Objects.nonNull(annotation) && Regulated.class.equals(annotation.annotationType());
+        return Regulated.class.equals(annotation.annotationType());
     }
 
-    private List<Annotation> getActualAnnotations(ConstraintLocation constraintLocation, ConstraintHelper constraintHelper) {
+    private List<Annotation> getActualAnnotations(ConstraintHelper constraintHelper) {
         Annotation[] annotations = ((JavaBeanField) constraintLocation.getConstrainable()).getDeclaredAnnotations();
         List<Annotation> annotationList = new LinkedList<>();
         for (Annotation annotation : annotations) {
@@ -111,7 +104,7 @@ public class PropertyDescriptorImpl implements PropertyDescriptor {
     }
 
     private List<Annotation> getActualAnnotations(Annotation annotation, ConstraintHelper constraintHelper) {
-        List<Annotation> annotationList = CollectionHelper.newArrayList(Arrays.asList(annotation));
+        List<Annotation> annotationList = CollectionHelper.newArrayList(Collections.singletonList(annotation));
         if (constraintHelper.isMultiValueConstraint(annotation.annotationType())) {
             annotationList.addAll(constraintHelper.getConstraintsFromMultiValueConstraint(annotation));
         }

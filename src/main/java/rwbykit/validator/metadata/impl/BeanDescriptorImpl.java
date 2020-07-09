@@ -22,11 +22,12 @@ public class BeanDescriptorImpl<T> implements BeanDescriptor<T> {
     private final Class<T> classType;
     private final Map<String, PropertyDescriptor> propertyDescriptors;
     private final ConstraintHelper constraintHelper;
-    private final JavaBeanHelper javaBeanHelper = new JavaBeanHelper(new DefaultGetterPropertySelectionStrategy(), new DefaultPropertyNodeNameProvider());
+    private final JavaBeanHelper javaBeanHelper;
 
-    public BeanDescriptorImpl(Class<T> classType, ConstraintHelper constraintHelper) {
+    public BeanDescriptorImpl(Class<T> classType, ConstraintHelper constraintHelper, JavaBeanHelper javaBeanHelper) {
         this.classType = classType;
         this.constraintHelper = constraintHelper;
+        this.javaBeanHelper = javaBeanHelper;
         this.propertyDescriptors = buildPropertyDescriptors(classType);
     }
 
@@ -54,7 +55,7 @@ public class BeanDescriptorImpl<T> implements BeanDescriptor<T> {
     }
 
     private boolean hasAnnotation(Field field) {
-        return Objects.nonNull(field) && !ObjectUtils.isEmpty(field.getDeclaredAnnotations());
+        return !ObjectUtils.isEmpty(field.getDeclaredAnnotations());
     }
 
 	@Override

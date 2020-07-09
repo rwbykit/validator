@@ -174,8 +174,7 @@ public class ValidatorContext<T> {
                 (ConstraintDescriptorImpl) constraintDescriptor, constraintValidatorManager.getDefaultConstraintValidatorFactory(), constraintValidatorManager.getDefaultConstraintValidatorInitializationContext());
         validator.initialize(constraintDescriptor.getAnnotation());
         V value = valueContext.getPropertyValue(propertyDescriptor.getPropertyName());
-        boolean result = constraintValidate(constraintDescriptor, validator, valueContext, value);
-        return result;
+        return constraintValidate(constraintDescriptor, validator, valueContext, value);
     }
 
 
